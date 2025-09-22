@@ -3,6 +3,8 @@
 //Title program: Music Recommendation Assistant
 //Inputs: Music preference
 //Outputs: A suggested music title and its artist
+//Outputs: A database chart for songs and genres
+//Added list of Genres available
 #include <iostream>
 #include <vector>
 #include <string>
