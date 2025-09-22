@@ -42,7 +42,7 @@ vector<Song> musicList = {
     {"Dare", "Gorillaz", {"electronic", "dance"}, 2005, 8.7},
     {"Adorn", "Miguel", {"rnb", "pop"}, 2012, 9.2},
     {"Silent Running", "Gorillaz", {"alternative", "electronic"}, 2020, 8.5},
-    {"Boo'd Up", "Ella Mai", {"rnb", "contemporary"}, 2018, 8.5},
+    {"From The Start", "Laufey", {"jazz", "indie-pop"}, 2023, 8.5},
     {"Sleep Well", "d4vd", {"indie", "bedroom pop"}, 2023, 8.3}
 };
 
@@ -154,8 +154,8 @@ void checkResult(const bool found, const Song& result) {
 // Display available genres
 void showAvailableGenres() {
     cout << "\n📋 Available Genres:" << endl;
-    cout << "rock, pop, rnb, hip-hop, country, alternative, indie, soul, " << endl;
-    cout << "ballad, hard rock, classic rock, electronic, dance, bedroom pop, alt-pop, synth-pop" << endl;
+    cout << "rock, pop, rnb, hip-hop, country, alternative, indie, soul, jazz, " << endl;
+    cout << "ballad, hard rock, classic rock, electronic, dance, bedroom pop, alt-pop, synth-pop, indie-pop" << endl;
     cout << endl;
 }
 
@@ -252,6 +252,9 @@ int main() {
             }
         }
     } while (choice != 0);
+    
+    return 0;
+}
     
     return 0;
 }
