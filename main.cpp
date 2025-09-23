@@ -67,48 +67,52 @@ bool hasGenre(const Song& song, const string& genre) {
     return false;
 }
 
+bool compareNewest(const Song& a, const Song& b) {
+    return a.year > b.year;
+}
+
 // Recommend song based on user preference (genre)
 bool recommendByGenre(const string preference, Song& result) {
     vector<Song> matchingSongs;
-    
+
     // Find all songs that match the genre
     for (const Song& song : musicList) {
         if (hasGenre(song, preference)) {
             matchingSongs.push_back(song);
         }
     }
-    
+
     if (matchingSongs.empty()) {
         return false;
     }
-    
+
     // Sort by popularity and return the most popular
-    sort(matchingSongs.begin(), matchingSongs.end(), 
+    sort(matchingSongs.begin(), matchingSongs.end(),
          [](const Song& a, const Song& b) {
              return a.popularity > b.popularity;
          });
-    
+
     result = matchingSongs[0];
     return true;
 }
 
 // Recommend newest release song
-bool showNewestRelease(Song& result) {
+vector<Song> showNewestRelease() {
     if (musicList.empty()) {
-        return false;
+        return {};
     }
-    
-    // Find the song with the latest year
-    Song newestSong = musicList[0];
-    for (const Song& song : musicList) {
-        if (song.year > newestSong.year || 
-           (song.year == newestSong.year && song.popularity > newestSong.popularity)) {
-            newestSong = song;
-        }
+
+    vector<Song> newestSongs = musicList; // copy full list
+
+    // Sort by year
+    sort(newestSongs.begin(), newestSongs.end(), compareNewest);
+
+    // Keep only top 3
+    if (newestSongs.size() > 3) {
+        newestSongs.resize(3);
     }
-    
-    result = newestSong;
-    return true;
+
+    return newestSongs;
 }
 
 // Random recommend a song
@@ -116,12 +120,12 @@ bool todayRecommend(Song& result) {
     if (musicList.empty()) {
         return false;
     }
-    
+
     // Use current time as seed for random generator
     unsigned seed = chrono::system_clock::now().time_since_epoch().count();
     default_random_engine generator(seed);
     uniform_int_distribution<int> distribution(0, musicList.size() - 1);
-    
+
     int randomIndex = distribution(generator);
     result = musicList[randomIndex];
     return true;
@@ -131,7 +135,7 @@ bool todayRecommend(Song& result) {
 void checkResult(const bool found, const Song& result) {
     if (found) {
         cout << "\n" << string(50, '=') << endl;
-        cout << "🎵 RECOMMENDED SONG 🎵" << endl;
+        cout << "RECOMMENDED SONG" << endl;
         cout << string(50, '=') << endl;
         cout << "Title: " << result.title << endl;
         cout << "Artist: " << result.artist << endl;
@@ -145,7 +149,7 @@ void checkResult(const bool found, const Song& result) {
         cout << endl;
         cout << string(50, '=') << endl;
     } else {
-        cout << "\n❌ No songs found matching your criteria." << endl;
+        cout << "\nNo songs found matching your criteria." << endl;
         cout << "Try a different genre like: rock, pop, hip-hop, country, etc." << endl;
     }
     cout << endl;
@@ -153,7 +157,7 @@ void checkResult(const bool found, const Song& result) {
 
 // Display available genres
 void showAvailableGenres() {
-    cout << "\n📋 Available Genres:" << endl;
+    cout << "\nAvailable Genres:" << endl;
     cout << "rock, pop, rnb, hip-hop, country, alternative, indie, soul, jazz, " << endl;
     cout << "ballad, hard rock, classic rock, electronic, dance, bedroom pop, alt-pop, synth-pop, indie-pop" << endl;
     cout << endl;
@@ -161,9 +165,9 @@ void showAvailableGenres() {
 
 // Display program statistics
 void showStats() {
-    cout << "\n📊 Music Database Statistics:" << endl;
+    cout << "\nMusic Database Statistics:" << endl;
     cout << "Total songs: " << musicList.size() << endl;
-    
+
     // Count genres
     vector<string> allGenres;
     for (const Song& song : musicList) {
@@ -171,12 +175,12 @@ void showStats() {
             allGenres.push_back(genre);
         }
     }
-    
+
     // Get unique genres count
     sort(allGenres.begin(), allGenres.end());
     allGenres.erase(unique(allGenres.begin(), allGenres.end()), allGenres.end());
     cout << "Available genres: " << allGenres.size() << endl;
-    
+
     // Find year range
     int minYear = musicList[0].year, maxYear = musicList[0].year;
     for (const Song& song : musicList) {
@@ -188,30 +192,30 @@ void showStats() {
 }
 
 int main() {
-    cout << "🎵 === SPOTIFY MUSIC RECOMMENDATION ASSISTANT === 🎵" << endl;
+    cout << " === SPOTIFY MUSIC RECOMMENDATION ASSISTANT === " << endl;
     cout << "Welcome to your personal music discovery experience!" << endl;
-    
+
     int choice;
     Song result;
     bool found = false;
-    
+
     do {
         cout << "\n" << string(60, '-') << endl;
-        cout << "🎯 RECOMMENDATION OPTIONS:" << endl;
-        cout << "1. 🎸 Recommend by Genre" << endl;
-        cout << "2. 🆕 Show Newest Releases" << endl;
-        cout << "3. 🎲 Today's Random Pick" << endl;
-        cout << "4. 📋 Show Available Genres" << endl;
-        cout << "5. 📊 Database Statistics" << endl;
-        cout << "0. 👋 Exit" << endl;
+        cout << " RECOMMENDATION OPTIONS:" << endl;
+        cout << "1. Recommend by Genre" << endl;
+        cout << "2. Show Newest Releases" << endl;
+        cout << "3. Today's Random Pick" << endl;
+        cout << "4. Show Available Genres" << endl;
+        cout << "5. Database Statistics" << endl;
+        cout << "0. Exit" << endl;
         cout << string(60, '-') << endl;
         cout << "Enter your choice (0-5): ";
         cin >> choice;
-        
+
         switch(choice) {
             case 1: {
                 string preference;
-                cout << "\n🎸 Enter your preferred music genre: ";
+                cout << "\nEnter your preferred music genre: ";
                 cin >> preference;
                 found = recommendByGenre(preference, result);
                 checkResult(found, result);
@@ -221,14 +225,22 @@ int main() {
                 break;
             }
             case 2: {
-                found = showNewestRelease(result);
-                cout << "\n🆕 Here's the newest release in our database:";
-                checkResult(found, result);
+                vector<Song> resultNewest = showNewestRelease();
+                if (resultNewest.empty()) {
+                    cout << "\n No songs available in database." << endl;
+                }
+                else {
+                    cout << "\n Today's Newest Releases:\n";
+                    for (int i = 0; i < resultNewest.size(); i++) {
+                        cout << "\n#" << (i + 1) << " pick:";
+                        checkResult(true, resultNewest[i]);
+                    }
+                }
                 break;
             }
             case 3: {
                 found = todayRecommend(result);
-                cout << "\n🎲 Your random song of the day:";
+                cout << "\nYour random song of the day:";
                 checkResult(found, result);
                 break;
             }
@@ -241,20 +253,18 @@ int main() {
                 break;
             }
             case 0: {
-                cout << "\n🎵 Thank you for using Spotify Music Recommendation Assistant!" << endl;
-                cout << "Keep discovering great music! Goodbye! 🎶" << endl;
+                cout << "\nThank you for using Spotify Music Recommendation Assistant!" << endl;
+                cout << "Keep discovering great music! Goodbye!" << endl;
                 break;
             }
             default: {
-                cout << "\n❌ Invalid input!" << endl;
+                cout << "\nInvalid input!" << endl;
                 cout << "Please enter a number between 0 and 5." << endl << endl;
                 break;
             }
         }
     } while (choice != 0);
-    
+
     return 0;
 }
-    
-    return 0;
 }
