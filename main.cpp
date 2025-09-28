@@ -4,7 +4,7 @@
 //Inputs: Music preference
 //Outputs: A suggested music title and its artist
 //Outputs: A database chart for songs and genres
-//Added list of Genres available
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -19,10 +19,10 @@ struct Song {
     string artist;
     vector<string> genres;
     int year;
-    float popularity; // Added popularity rating (0.0-10.0)
+    float popularity;
 };
 
-// Expanded music database
+// Music database
 vector<Song> musicList = {
     {"Gemuruh", "Faizal Tahir", {"rock", "pop"}, 2007, 8.5},
     {"Shape of You", "Ed Sheeran", {"pop"}, 2017, 9.2},
@@ -45,10 +45,6 @@ vector<Song> musicList = {
     {"From The Start", "Laufey", {"jazz", "indie-pop"}, 2023, 8.5},
     {"Sleep Well", "d4vd", {"indie", "bedroom pop"}, 2023, 8.3}
 };
-
-vector<Song> getMusicList() {
-    return musicList;
-}
 
 // Convert string to lowercase for case-insensitive comparison
 string toLowerCase(string str) {
